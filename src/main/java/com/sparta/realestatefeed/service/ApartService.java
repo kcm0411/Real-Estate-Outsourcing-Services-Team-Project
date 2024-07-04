@@ -4,8 +4,10 @@ import com.sparta.realestatefeed.dto.ApartRequestDto;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.entity.Apart;
+import com.sparta.realestatefeed.entity.ApartLike;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.entity.UserRoleEnum;
+import com.sparta.realestatefeed.repository.ApartLikeRepository;
 import com.sparta.realestatefeed.repository.ApartRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -25,9 +28,11 @@ import java.util.stream.Collectors;
 public class ApartService {
 
     private final ApartRepository apartRepository;
+    private final ApartLikeRepository apartLikeRepository;
 
-    public ApartService(ApartRepository apartRepository) {
+    public ApartService(ApartRepository apartRepository, ApartLikeRepository apartLikeRepository) {
         this.apartRepository = apartRepository;
+        this.apartLikeRepository = apartLikeRepository;
     }
 
     @Transactional
@@ -109,4 +114,34 @@ public class ApartService {
                 .collect(Collectors.toList());
         return new CommonDto<>(HttpStatus.OK.value(), area + " 지역별 아파트 조회에 성공하였습니다.", responseDtos);
     }
+
+    public CommonDto<String> likeApart(Long id, User user) {
+
+        // 아파트 있는지 체크
+        Apart apart = apartRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("유효하지 않은 아파트 ID입니다."));
+
+        // 아파트 있다면, 게시글좋아요 테이블에서 좋아요를 이미 누른상태인지, 아닌지 체크
+        if (Objects.isNull(apartLikeRepository.findByApartIdAndUserId(id, user.getId()))){
+
+            // NULL 값 반환 = DB에 없음 = 좋아요 등록 = Create
+            ApartLike apartLike = new ApartLike(apart, user);
+            apartLikeRepository.save(apartLike);
+
+            return new CommonDto<>(HttpStatus.OK.value(), "좋아요를 눌렀습니다.", null);
+
+        } else {
+
+            // DB에 있음 = 좋아요 취소 = Delete
+            ApartLike apartLike = apartLikeRepository.findByApartIdAndUserId(id, user.getId());
+            apartLikeRepository.delete(apartLike);
+
+            return new CommonDto<>(HttpStatus.OK.value(), "좋아요를 취소했습니다.", null);
+
+        }
+
+
+
+    }
+
 }

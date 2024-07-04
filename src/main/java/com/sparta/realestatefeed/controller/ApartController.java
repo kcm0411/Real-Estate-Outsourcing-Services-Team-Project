@@ -78,4 +78,19 @@ public class ApartController {
         CommonDto<String> responseDto = apartService.deleteApart(id, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
+
+    /**
+     * 게시글 좋아요 기능 ( 인가 필요 )
+     * @param id : 좋아요 할 게시글의 id
+     * @return : 좋아요 추가/취소 확인
+     */
+    @PostMapping("/{id}/like")
+    public ResponseEntity<CommonDto<String>> likeApart(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        CommonDto<String> responseDto = apartService.likeApart(id, userDetails.getUser());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
+    }
+
 }
