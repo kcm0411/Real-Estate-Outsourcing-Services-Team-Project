@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "QNA")
@@ -29,6 +31,9 @@ public class QnA extends Timestamped {
     @ManyToOne
     @JoinColumn(name = "apart_id")
     private Apart apart;
+
+    @OneToMany(mappedBy = "qnA", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QnALike> qnALikes;
 
     public QnA(String content, User user, Apart apart) {
         this.content = content;

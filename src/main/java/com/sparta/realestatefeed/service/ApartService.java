@@ -121,6 +121,11 @@ public class ApartService {
         Apart apart = apartRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유효하지 않은 아파트 ID입니다."));
 
+        // 아파트 작성자가 본인인지 체크
+        if (apart.getUser().getId().equals(user.getId())){
+            throw new IllegalArgumentException("자신의 게시글에는 좋아요를 추가할 수 없습니다.");
+        }
+
         // 아파트 있다면, 게시글좋아요 테이블에서 좋아요를 이미 누른상태인지, 아닌지 체크
         if (Objects.isNull(apartLikeRepository.findByApartIdAndUserId(id, user.getId()))){
 
@@ -139,8 +144,6 @@ public class ApartService {
             return new CommonDto<>(HttpStatus.OK.value(), "좋아요를 취소했습니다.", null);
 
         }
-
-
 
     }
 

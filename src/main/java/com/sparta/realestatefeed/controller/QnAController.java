@@ -68,4 +68,19 @@ public class QnAController {
         return ResponseEntity.status(HttpStatus.OK).body("문의 삭제에 성공하셨습니다.");
 
     }
+
+    /**
+     * 댓글 좋아요 기능 ( 인가 필요 )
+     * @param apartId : 좋아요 할 게시글의 id (RESTful 용)
+     * @param qnaId : 좋아요 할 게시글의 id
+     * @return : 좋아요 추가/취소 확인
+     */
+    @PostMapping("aparts/{apartId}/qna/{qnaId}/like")
+    public ResponseEntity<CommonDto<String>> likeApart(@PathVariable Long qnaId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        CommonDto<String> responseDto = qnAService.likeQnA(qnaId, userDetails.getUser());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
+    }
 }

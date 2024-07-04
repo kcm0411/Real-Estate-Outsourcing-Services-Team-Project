@@ -5,6 +5,7 @@ import com.sparta.realestatefeed.dto.QnARequestDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.ApartRepository;
+import com.sparta.realestatefeed.repository.QnALikeRepository;
 import com.sparta.realestatefeed.repository.QnARepository;
 import com.sparta.realestatefeed.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 public class QnAService {
@@ -22,13 +24,13 @@ public class QnAService {
     private QnARepository qnARepository;
     private UserRepository userRepository;
     private ApartRepository apartRepository;
+    private QnALikeRepository qnALikeRepository;
 
-    public QnAService(QnARepository qnARepository, UserRepository userRepository, ApartRepository apartRepository) {
-
+    public QnAService(QnARepository qnARepository, UserRepository userRepository, ApartRepository apartRepository, QnALikeRepository qnALikeRepository) {
         this.qnARepository = qnARepository;
         this.userRepository = userRepository;
         this.apartRepository = apartRepository;
-
+        this.qnALikeRepository = qnALikeRepository;
     }
 
     @Transactional
@@ -119,4 +121,37 @@ public class QnAService {
 
         return commonDto;
     }
+
+    public CommonDto<String> likeQnA(Long qnaId, User user) {
+
+        // 댓글 있는지 체크
+        QnA qnA = qnARepository.findById(qnaId)
+                .orElseThrow(() -> new NoSuchElementException("요청하신 댓글이 존재하지 않습니다."));
+
+        // 댓글 작성자가 본인인지 체크
+        if (qnA.getUser().getId().equals(user.getId())){
+            throw new IllegalArgumentException("자신의 댓글에는 좋아요를 추가할 수 없습니다.");
+        }
+
+
+        // 댓글이 있다면, 댓글좋아요 테이블에서 좋아요를 이미 누른상태인지, 아닌지 체크
+        if (Objects.isNull(qnALikeRepository.findByQnAIdAndUserId(qnaId, user.getId()))) {
+
+            // NULL 값 반환 = DB에 없음 = 좋아요 등록 = Create
+            QnALike qnALike = new QnALike(qnA, user);
+            qnALikeRepository.save(qnALike);
+
+            return new CommonDto<>(HttpStatus.OK.value(), "좋아요를 눌렀습니다.", null);
+
+        } else {
+
+            // DB에 있음 = 좋아요 취소 = Delete
+            QnALike qnALike = qnALikeRepository.findByQnAIdAndUserId(qnaId, user.getId());
+            qnALikeRepository.delete(qnALike);
+
+            return new CommonDto<>(HttpStatus.OK.value(), "좋아요를 취소했습니다.", null);
+
+        }
+    }
+
 }
