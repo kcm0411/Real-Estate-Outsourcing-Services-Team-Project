@@ -12,11 +12,22 @@ public class ApartLikeRepositoryImpl implements ApartLikeRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public ApartLike findByApartIdAndUserId(Long apartId, Long userId) {
+    public ApartLike findLikeByApartIdAndUserId(Long apartId, Long userId) {
         QApartLike apartLike = QApartLike.apartLike;
 
         return jpaQueryFactory.selectFrom(apartLike)
                 .where(apartLike.apart.id.eq(apartId).and(apartLike.user.id.eq(userId)))
                 .fetchOne();
+    }
+
+    public Long findCountLikeByApartId(Long apartId){
+
+        QApartLike apartLike = QApartLike.apartLike;
+
+        return jpaQueryFactory.select(apartLike.count())
+                .from(apartLike)
+                .where(apartLike.apart.id.eq(apartId))
+                .fetchOne();
+
     }
 }

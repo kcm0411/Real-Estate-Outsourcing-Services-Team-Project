@@ -1,6 +1,7 @@
 package com.sparta.realestatefeed.service;
 
 import com.sparta.realestatefeed.dto.CommonDto;
+import com.sparta.realestatefeed.dto.OneQnALikeResponseDto;
 import com.sparta.realestatefeed.dto.QnARequestDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.*;
@@ -55,14 +56,17 @@ public class QnAService {
 
     }
 
-    public CommonDto<QnAResponseDto> select(Long qnaId) {
+    public CommonDto<OneQnALikeResponseDto> select(Long qnaId) {
 
         QnA qna = qnARepository.findById(qnaId)
                 .orElseThrow(() -> new NoSuchElementException("요청하신 댓글이 존재하지 않습니다."));
 
-        QnAResponseDto responseDto = new QnAResponseDto(qna);
+        // 댓글 id로 좋아요 수 조회
+        Long countLike = qnALikeRepository.findCountLikeByQnAId(qnaId);
 
-        CommonDto<QnAResponseDto> commonDto = new CommonDto<QnAResponseDto>(HttpStatus.OK.value(), "문의 조회에 성공하셨습니다.", responseDto);
+        OneQnALikeResponseDto responseDto = new OneQnALikeResponseDto(qna, countLike);
+
+        CommonDto<OneQnALikeResponseDto> commonDto = new CommonDto<OneQnALikeResponseDto>(HttpStatus.OK.value(), "문의 조회에 성공하셨습니다.", responseDto);
 
         return commonDto;
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ApartLikeRepositoryCustom {
 
-    ApartLike findByApartIdAndUserId(Long apartId, Long userId);
+    ApartLike findLikeByApartIdAndUserId(Long apartId, Long userId);
 
+    Long findCountLikeByApartId(Long id);
 }

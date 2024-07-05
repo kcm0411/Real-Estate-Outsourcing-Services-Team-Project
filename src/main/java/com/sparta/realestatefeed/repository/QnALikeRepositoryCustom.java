@@ -8,4 +8,6 @@ public interface QnALikeRepositoryCustom {
 
     QnALike findByQnAIdAndUserId(Long qnaId, Long id);
 
+    Long findCountLikeByQnAId(Long qnaId);
+
 }

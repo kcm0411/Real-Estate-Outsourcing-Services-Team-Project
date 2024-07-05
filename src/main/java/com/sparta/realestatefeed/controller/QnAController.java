@@ -1,6 +1,7 @@
 package com.sparta.realestatefeed.controller;
 
 import com.sparta.realestatefeed.dto.CommonDto;
+import com.sparta.realestatefeed.dto.OneQnALikeResponseDto;
 import com.sparta.realestatefeed.dto.QnARequestDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.security.UserDetailsImpl;
@@ -33,9 +34,9 @@ public class QnAController {
     }
 
     @GetMapping("aparts/{apartId}/qna/{qnaId}")
-    public ResponseEntity<CommonDto<QnAResponseDto>> getQnA(@PathVariable Long qnaId) {
+    public ResponseEntity<CommonDto<OneQnALikeResponseDto>> getQnA(@PathVariable Long qnaId) {
 
-        CommonDto<QnAResponseDto> responseDto = qnAService.select(qnaId);
+        CommonDto<OneQnALikeResponseDto> responseDto = qnAService.select(qnaId);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 

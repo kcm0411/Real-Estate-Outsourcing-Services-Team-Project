@@ -3,6 +3,7 @@ package com.sparta.realestatefeed.service;
 import com.sparta.realestatefeed.dto.ApartRequestDto;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
+import com.sparta.realestatefeed.dto.OneApartLikeResponseDto;
 import com.sparta.realestatefeed.entity.Apart;
 import com.sparta.realestatefeed.entity.ApartLike;
 import com.sparta.realestatefeed.entity.User;
@@ -44,11 +45,15 @@ public class ApartService {
         return new CommonDto<>(HttpStatus.OK.value(), "아파트 생성에 성공하였습니다.", responseDto);
     }
 
-    public CommonDto<ApartResponseDto> getApart(Long id) {
+    public CommonDto<OneApartLikeResponseDto> getApart(Long id) {
 
         Apart apart = apartRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유효하지 않은 아파트 ID입니다."));
-        ApartResponseDto responseDto = new ApartResponseDto(apart);
+
+        // 아파트 id로 좋아요 수 조회
+        Long countLike = apartLikeRepository.findCountLikeByApartId(id);
+
+        OneApartLikeResponseDto responseDto = new OneApartLikeResponseDto(apart,countLike);
         return new CommonDto<>(HttpStatus.OK.value(), "아파트 조회에 성공하였습니다.", responseDto);
     }
 
@@ -127,7 +132,7 @@ public class ApartService {
         }
 
         // 아파트 있다면, 게시글좋아요 테이블에서 좋아요를 이미 누른상태인지, 아닌지 체크
-        if (Objects.isNull(apartLikeRepository.findByApartIdAndUserId(id, user.getId()))){
+        if (Objects.isNull(apartLikeRepository.findLikeByApartIdAndUserId(id, user.getId()))){
 
             // NULL 값 반환 = DB에 없음 = 좋아요 등록 = Create
             ApartLike apartLike = new ApartLike(apart, user);
@@ -138,7 +143,7 @@ public class ApartService {
         } else {
 
             // DB에 있음 = 좋아요 취소 = Delete
-            ApartLike apartLike = apartLikeRepository.findByApartIdAndUserId(id, user.getId());
+            ApartLike apartLike = apartLikeRepository.findLikeByApartIdAndUserId(id, user.getId());
             apartLikeRepository.delete(apartLike);
 
             return new CommonDto<>(HttpStatus.OK.value(), "좋아요를 취소했습니다.", null);

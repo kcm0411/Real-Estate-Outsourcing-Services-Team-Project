@@ -3,6 +3,7 @@ package com.sparta.realestatefeed.controller;
 import com.sparta.realestatefeed.dto.ApartRequestDto;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
+import com.sparta.realestatefeed.dto.OneApartLikeResponseDto;
 import com.sparta.realestatefeed.security.UserDetailsImpl;
 import com.sparta.realestatefeed.service.ApartService;
 import org.springframework.http.HttpStatus;
@@ -38,8 +39,8 @@ public class ApartController {
      * @return : 특정 게시글 조회 데이터
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CommonDto<ApartResponseDto>> getApart(@PathVariable Long id) {
-        CommonDto<ApartResponseDto> responseDto = apartService.getApart(id);
+    public ResponseEntity<CommonDto<OneApartLikeResponseDto>> getApart(@PathVariable Long id) {
+        CommonDto<OneApartLikeResponseDto> responseDto = apartService.getApart(id);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
