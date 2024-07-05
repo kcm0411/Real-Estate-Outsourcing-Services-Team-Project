@@ -14,4 +14,6 @@ public interface QnALikeRepositoryCustom {
     Long findCountLikeByQnAId(Long qnaId);
 
     List<QnA> findByUserId(Long id, long offset, int pageSize);
+
+    Long findCountLikeByUserId(Long id);
 }

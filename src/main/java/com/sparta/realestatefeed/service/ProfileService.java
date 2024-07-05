@@ -1,10 +1,14 @@
 package com.sparta.realestatefeed.service;
 
 import com.sparta.realestatefeed.dto.PasswordRequestDto;
+import com.sparta.realestatefeed.dto.ProfileAndCountLikeResponseDto;
 import com.sparta.realestatefeed.dto.ProfileRequestDto;
 import com.sparta.realestatefeed.dto.ProfileResponseDto;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.exception.PasswordMismatchException;
+import com.sparta.realestatefeed.repository.ApartLikeRepository;
+import com.sparta.realestatefeed.repository.QnALikeRepository;
+import com.sparta.realestatefeed.repository.QnARepository;
 import com.sparta.realestatefeed.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,12 +22,16 @@ public class ProfileService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ApartLikeRepository apartLikeRepository;
+    private final QnALikeRepository qnALikeRepository;
 
-
-    public ProfileService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public ProfileService(UserRepository userRepository, PasswordEncoder passwordEncoder, ApartLikeRepository apartLikeRepository, QnALikeRepository qnALikeRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.apartLikeRepository = apartLikeRepository;
+        this.qnALikeRepository = qnALikeRepository;
     }
+
     public ProfileResponseDto getUserProfile(String userName) {
 
         User user = userRepository.findByUserName(userName).orElseThrow(
@@ -86,4 +94,16 @@ public class ProfileService {
 
     }
 
+    public ProfileAndCountLikeResponseDto getUserProfileAndCountLike(String userName, Long id) {
+
+        User user = userRepository.findByUserName(userName).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저는 존재하지 않습니다.")
+        );
+
+        Long apartCountLike = apartLikeRepository.findCountLikeByUserId(id);
+        Long qnACountLike = qnALikeRepository.findCountLikeByUserId(id);
+
+        return new ProfileAndCountLikeResponseDto(user, apartCountLike, qnACountLike);
+
+    }
 }

@@ -52,4 +52,14 @@ public class QnALikeRepositoryImpl implements QnALikeRepositoryCustom {
                 .fetch();
 
     }
+
+    public Long findCountLikeByUserId(Long id){
+
+        QQnALike qnALike = QQnALike.qnALike;
+
+        return jpaQueryFactory.select(qnALike.count())
+                .from(qnALike)
+                .where(qnALike.user.id.eq(id))
+                .fetchOne();
+    }
 }

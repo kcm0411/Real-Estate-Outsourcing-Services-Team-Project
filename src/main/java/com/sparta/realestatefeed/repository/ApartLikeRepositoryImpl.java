@@ -54,4 +54,15 @@ public class ApartLikeRepositoryImpl implements ApartLikeRepositoryCustom {
                 .fetch();
 
     }
+
+    public Long findCountLikeByUserId(Long id){
+
+        QApartLike apartLike = QApartLike.apartLike;
+
+        return jpaQueryFactory.select(apartLike.count())
+                .from(apartLike)
+                .where(apartLike.user.id.eq(id))
+                .fetchOne();
+    }
+
 }

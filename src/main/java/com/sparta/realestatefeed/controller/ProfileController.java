@@ -26,12 +26,9 @@ import java.util.List;
 @Validated
 public class ProfileController {
 
-
     private final ProfileService profileService;
 
     private final Logger logger = LoggerFactory.getLogger(ProfileController.class);
-
-
 
     public ProfileController(ProfileService profileService) {
 
@@ -44,21 +41,31 @@ public class ProfileController {
         HttpHeaders headers = new HttpHeaders();
 
         try{
+
             String userName = userDetails.getUser().getUserName();
 
-            ProfileResponseDto responseDto = profileService.getUserProfile(userName);
-            CommonDto<ProfileResponseDto> response = new CommonDto<>(HttpStatus.OK.value(), "회원 조회", responseDto);
+            ProfileAndCountLikeResponseDto responseDto = profileService.getUserProfileAndCountLike(userName, userDetails.getUser().getId());
+
+            CommonDto<ProfileAndCountLikeResponseDto> response = new CommonDto<>(HttpStatus.OK.value(), "회원 조회", responseDto);
+
             return ResponseEntity.status(HttpStatus.OK).body(response);
+
         }catch (UserNotFoundException e) {
+
             headers.add("Message", "해당 사용자를 찾을 수 없습니다.");
             return ResponseEntity.notFound().headers(headers).build();
+
         } catch (AccessDeniedException e) {
+
             headers.add("Message", "인증되지 않은 사용자입니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).headers(headers).build();
+
         } catch (RuntimeException e) {
+
             String errorMessage = "Profile Error: " + e.getMessage();
             headers.add("Message", errorMessage);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).headers(headers).build();
+
         }
 
     }

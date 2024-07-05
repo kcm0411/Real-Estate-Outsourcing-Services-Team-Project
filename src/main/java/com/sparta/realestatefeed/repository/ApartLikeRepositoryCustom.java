@@ -14,4 +14,6 @@ public interface ApartLikeRepositoryCustom {
     Long findCountLikeByApartId(Long id);
 
     List<Apart> findByUserId(Long id, long offset, int pageSize);
+
+    Long findCountLikeByUserId(Long id);
 }
