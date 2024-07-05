@@ -1,9 +1,6 @@
 package com.sparta.realestatefeed.controller;
 
-import com.sparta.realestatefeed.dto.CommonDto;
-import com.sparta.realestatefeed.dto.OneQnALikeResponseDto;
-import com.sparta.realestatefeed.dto.QnARequestDto;
-import com.sparta.realestatefeed.dto.QnAResponseDto;
+import com.sparta.realestatefeed.dto.*;
 import com.sparta.realestatefeed.security.UserDetailsImpl;
 import com.sparta.realestatefeed.service.QnAService;
 import org.springframework.http.HttpStatus;
@@ -84,4 +81,18 @@ public class QnAController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
+
+    /**
+     * 좋아요 누른 댓글 조회 기능
+     * @return : 좋아요 누른 댓글 조회
+     */
+    @GetMapping("aparts/qna/like")
+    public ResponseEntity<CommonDto<List<OneQnALikeResponseDto>>> getLikeQnAs(@RequestParam(defaultValue = "0") int page,
+                                                                              @RequestParam(defaultValue = "5") int size,
+                                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        CommonDto<List<OneQnALikeResponseDto>> responseDtos = qnAService.getLikeQnAs(userDetails.getUser().getId(), page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
+    }
+
 }

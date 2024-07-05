@@ -1,11 +1,13 @@
 package com.sparta.realestatefeed.repository;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.realestatefeed.entity.QApartLike;
-import com.sparta.realestatefeed.entity.QQnALike;
-import com.sparta.realestatefeed.entity.QnALike;
+import com.sparta.realestatefeed.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,4 +35,21 @@ public class QnALikeRepositoryImpl implements QnALikeRepositoryCustom {
 
     }
 
+    public List<QnA> findByUserId(Long id, long offset, int pageSize){
+
+        QQnALike qnALike = QQnALike.qnALike;
+        QQnA qnA = QQnA.qnA;
+
+        OrderSpecifier<?> orderSpecifier = new OrderSpecifier<>(Order.DESC, qnA.createdAt);
+
+        return jpaQueryFactory.select(qnA)
+                .from(qnALike)
+                .join(qnALike.qnA,qnA)
+                .where(qnALike.user.id.eq(id))
+                .offset(offset)
+                .limit(pageSize)
+                .orderBy(orderSpecifier)
+                .fetch();
+
+    }
 }

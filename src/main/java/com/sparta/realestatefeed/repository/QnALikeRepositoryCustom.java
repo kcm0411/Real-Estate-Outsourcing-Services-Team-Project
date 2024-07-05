@@ -1,7 +1,10 @@
 package com.sparta.realestatefeed.repository;
 
+import com.sparta.realestatefeed.entity.QnA;
 import com.sparta.realestatefeed.entity.QnALike;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface QnALikeRepositoryCustom {
@@ -10,4 +13,5 @@ public interface QnALikeRepositoryCustom {
 
     Long findCountLikeByQnAId(Long qnaId);
 
+    List<QnA> findByUserId(Long id, long offset, int pageSize);
 }

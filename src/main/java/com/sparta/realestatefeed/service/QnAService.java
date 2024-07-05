@@ -1,14 +1,12 @@
 package com.sparta.realestatefeed.service;
 
-import com.sparta.realestatefeed.dto.CommonDto;
-import com.sparta.realestatefeed.dto.OneQnALikeResponseDto;
-import com.sparta.realestatefeed.dto.QnARequestDto;
-import com.sparta.realestatefeed.dto.QnAResponseDto;
+import com.sparta.realestatefeed.dto.*;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.ApartRepository;
 import com.sparta.realestatefeed.repository.QnALikeRepository;
 import com.sparta.realestatefeed.repository.QnARepository;
 import com.sparta.realestatefeed.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -158,4 +156,27 @@ public class QnAService {
         }
     }
 
+    public CommonDto<List<OneQnALikeResponseDto>> getLikeQnAs(Long qnaId, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        List<QnA> findQnAs = qnALikeRepository.findByUserId(qnaId, pageRequest.getOffset(), pageRequest.getPageSize());
+
+        List<OneQnALikeResponseDto> response = new ArrayList<>();
+
+        // 댓글 id로 좋아요 수 조회
+        Long countLike;
+
+        for(QnA q : findQnAs){
+            countLike = qnALikeRepository.findCountLikeByQnAId(q.getQnaId());
+            response.add(new OneQnALikeResponseDto(q,countLike));
+        }
+
+        if (response.isEmpty()){
+            throw new NoSuchElementException("좋아요 누른 댓글이 없습니다.");
+        }
+
+        return new CommonDto<>(HttpStatus.OK.value(), "좋아요 누른 댓글 조회에 성공했습니다.",response);
+
+    }
 }
