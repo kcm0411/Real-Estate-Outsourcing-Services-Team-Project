@@ -94,4 +94,18 @@ public class ApartController {
 
     }
 
+    /**
+     * 좋아요 누른 게시글 조회 기능
+     * @return : 좋아요 누른 게시글 조회
+     */
+    @GetMapping("/like")
+    public ResponseEntity<CommonDto<List<ApartResponseDto>>> getLikeAparts(@RequestParam(required = false) String area,
+                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                           @RequestParam(defaultValue = "5") int size,
+                                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        CommonDto<List<ApartResponseDto>> responseDtos = apartService.getLikeAparts(userDetails.getUser().getId(), page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
+    }
+
 }

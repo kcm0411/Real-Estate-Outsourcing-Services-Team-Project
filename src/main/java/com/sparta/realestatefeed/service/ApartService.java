@@ -152,4 +152,22 @@ public class ApartService {
 
     }
 
+    public CommonDto<List<ApartResponseDto>> getLikeAparts(Long id, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        List<Apart> findAparts = apartLikeRepository.findByUserId(id, pageRequest.getOffset(), pageRequest.getPageSize());
+
+        List<ApartResponseDto> response = new ArrayList<>();
+        for(Apart a : findAparts){
+             response.add(new ApartResponseDto(a));
+        }
+
+        if (response.isEmpty()){
+            throw new NoSuchElementException("좋아요 누른 아파트가 없습니다.");
+        }
+
+        return new CommonDto<>(HttpStatus.OK.value(), "좋아요 누른 아파트 조회에 성공했습니다.",response);
+
+    }
 }
