@@ -5,6 +5,8 @@ import com.sparta.realestatefeed.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class FollowRepositoryImpl implements FollowRepositoryCustom {
@@ -20,5 +22,15 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom {
                 .where(follow.follower.id.eq(followerId).and(follow.followee.id.eq(followeeId)))
                 .fetchOne();
 
+    }
+
+    public List<Long> findFolloweeIdList(Long followerId){
+
+        QFollow follow = QFollow.follow;
+
+        return jpaQueryFactory.selectDistinct(follow.followee.id)
+                .from(follow)
+                .where(follow.follower.id.eq(followerId))
+                .fetch();
     }
 }
