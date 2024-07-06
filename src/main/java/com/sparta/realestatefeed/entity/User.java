@@ -6,8 +6,6 @@ import com.sparta.realestatefeed.dto.UserRegisterRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +20,7 @@ import java.util.List;
 @Table(name = "users")
 @NoArgsConstructor
 public class User extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -51,6 +50,12 @@ public class User extends Timestamped {
     @CollectionTable(name = "user_previous_passwords", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "previous_password")
     private List<String> previousPasswords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> follower;
+
+    @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followee;
 
     public User(UserRegisterRequestDto requestDto) {
         this.userName = requestDto.getUserName();

@@ -1,5 +1,6 @@
 package com.sparta.realestatefeed.repository;
 
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.entity.Apart;
@@ -7,7 +8,6 @@ import com.sparta.realestatefeed.entity.ApartLike;
 import com.sparta.realestatefeed.entity.QApart;
 import com.sparta.realestatefeed.entity.QApartLike;
 import lombok.RequiredArgsConstructor;
-import com.querydsl.core.types.Order;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
