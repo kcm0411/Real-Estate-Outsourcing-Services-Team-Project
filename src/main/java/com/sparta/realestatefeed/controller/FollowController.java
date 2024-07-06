@@ -33,9 +33,10 @@ public class FollowController {
     @GetMapping("/aparts")
     public ResponseEntity<?> getFollowersPosts(@RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "5") int size,
+                                               @RequestParam(defaultValue = "time") String orderBy,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        CommonDto<List<ApartResponseDto>> response = followService.getFollowersPosts(userDetails.getUser(), page, size);
+        CommonDto<List<ApartResponseDto>> response = followService.getFollowersPosts(userDetails.getUser(), orderBy, page, size);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
 

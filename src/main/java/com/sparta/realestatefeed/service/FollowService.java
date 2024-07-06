@@ -65,7 +65,7 @@ public class FollowService {
 
     }
 
-    public CommonDto<List<ApartResponseDto>> getFollowersPosts(User user, int page, int size) {
+    public CommonDto<List<ApartResponseDto>> getFollowersPosts(User user, String orderByOption, int page, int size) {
 
         // 팔로우 한 사람이 있는지 체크
         List<Long> followeeIdList = followRepository.findFolloweeIdList(user.getId());
@@ -77,7 +77,7 @@ public class FollowService {
         PageRequest pageRequest = PageRequest.of(page, size);
 
         // 팔로우 한 사람이 등록한 게시글 리스트 가져오기
-        List<Apart> apartList = apartRepository.findByFollweeIdList(followeeIdList, pageRequest.getOffset(), pageRequest.getPageSize());
+        List<Apart> apartList = apartRepository.findByFollweeIdList(followeeIdList, orderByOption, pageRequest.getOffset(), pageRequest.getPageSize());
 
         List<ApartResponseDto> response = new ArrayList<>();
         for(Apart a : apartList){

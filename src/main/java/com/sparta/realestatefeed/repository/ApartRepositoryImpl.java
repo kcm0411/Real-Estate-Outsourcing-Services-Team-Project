@@ -18,17 +18,34 @@ public class ApartRepositoryImpl implements ApartRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Apart> findByFollweeIdList(List<Long> followeeIdList, long offset, int pageSize){
+    public List<Apart> findByFollweeIdList(List<Long> followeeIdList, String orderByOption, long offset, int pageSize){
 
         QApart apart = QApart.apart;
 
-        OrderSpecifier<?> orderSpecifier = new OrderSpecifier<>(Order.DESC, apart.createdAt);
+        OrderSpecifier<?>[] orderSpecifiers;
+
+        switch(orderByOption){
+
+            case "user":
+                orderSpecifiers = new OrderSpecifier<?>[]{
+                        new OrderSpecifier<>(Order.ASC, apart.user.id),
+                        new OrderSpecifier<>(Order.DESC, apart.createdAt)
+                };
+
+                break;
+
+            default:
+                orderSpecifiers = new OrderSpecifier<?>[]{
+                        new OrderSpecifier<>(Order.DESC, apart.createdAt)
+                };
+                break;
+        }
 
         return jpaQueryFactory.selectFrom(apart)
                 .where(apart.user.id.in(followeeIdList))
                 .offset(offset)
                 .limit(pageSize)
-                .orderBy(orderSpecifier)
+                .orderBy(orderSpecifiers)
                 .fetch();
 
     }
